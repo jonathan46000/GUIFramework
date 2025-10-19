@@ -1,28 +1,32 @@
 CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++17 -I/usr/include/freetype2
+CXXFLAGS = -Wall -Wextra -std=c++17 -I/usr/include/freetype2 -Isources
 LIBS = -lminifb -lX11 -lGL -lfreetype -lfontconfig -lpthread -lz
 
 # Directory structure
+SRC_DIR = src
 BUILD_DIR = build
 BIN_DIR = bin
 TARGET = $(BIN_DIR)/gui_app
 
-# Object files with build directory prefix
-OBJS = $(BUILD_DIR)/main.o $(BUILD_DIR)/GUIFramework.o $(BUILD_DIR)/Widget.o \
-       $(BUILD_DIR)/MenuBar.o $(BUILD_DIR)/DropDownMenu.o $(BUILD_DIR)/MenuItem.o \
-       $(BUILD_DIR)/FontRenderer.o $(BUILD_DIR)/TextBox.o $(BUILD_DIR)/PushButton.o \
-       $(BUILD_DIR)/Panel.o $(BUILD_DIR)/TextLabel.o $(BUILD_DIR)/BooleanWidget.o \
-       $(BUILD_DIR)/CheckBox.o $(BUILD_DIR)/RadioButton.o $(BUILD_DIR)/ScrollBar.o \
-       $(BUILD_DIR)/ListBox.o $(BUILD_DIR)/ContextMenu.o $(BUILD_DIR)/CascadeMenu.o \
-       $(BUILD_DIR)/DialogueBox.o $(BUILD_DIR)/FileDialog.o $(BUILD_DIR)/DialogManager.o \
-       $(BUILD_DIR)/ImageLoader.o $(BUILD_DIR)/ImageWidget.o $(BUILD_DIR)/MultiLineTextBox.o
+# Source files
+SRCS = $(SRC_DIR)/main.cpp $(SRC_DIR)/GUIFramework.cpp $(SRC_DIR)/Widget.cpp \
+       $(SRC_DIR)/MenuBar.cpp $(SRC_DIR)/DropDownMenu.cpp $(SRC_DIR)/MenuItem.cpp \
+       $(SRC_DIR)/FontRenderer.cpp $(SRC_DIR)/TextBox.cpp $(SRC_DIR)/PushButton.cpp \
+       $(SRC_DIR)/Panel.cpp $(SRC_DIR)/TextLabel.cpp $(SRC_DIR)/BooleanWidget.cpp \
+       $(SRC_DIR)/CheckBox.cpp $(SRC_DIR)/RadioButton.cpp $(SRC_DIR)/ScrollBar.cpp \
+       $(SRC_DIR)/ListBox.cpp $(SRC_DIR)/ContextMenu.cpp $(SRC_DIR)/CascadeMenu.cpp \
+       $(SRC_DIR)/DialogueBox.cpp $(SRC_DIR)/FileDialog.cpp $(SRC_DIR)/DialogManager.cpp \
+       $(SRC_DIR)/ImageLoader.cpp $(SRC_DIR)/ImageWidget.cpp $(SRC_DIR)/MultiLineTextBox.cpp
+
+# Object files
+OBJS = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SRCS))
 
 # Create directories and build target
 $(TARGET): $(OBJS) | $(BIN_DIR)
 	$(CXX) $(OBJS) -o $(TARGET) $(LIBS)
 
 # Pattern rule for building object files
-$(BUILD_DIR)/%.o: %.cpp | $(BUILD_DIR)
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Create build directory if it doesn't exist
