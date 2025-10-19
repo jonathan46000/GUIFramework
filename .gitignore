@@ -1,0 +1,24 @@
+# Build directories
+build/
+bin/
+
+# Object files
+*.o
+
+# Executable
+gui_app
+
+# Backup files
+*~
+*.bak
+*.swp
+*.swo
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# OS files
+.DS_Store
+Thumbs.db
