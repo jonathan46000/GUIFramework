@@ -1,6 +1,7 @@
 #include "GUIFramework.h"
 #include "DropDownMenu.h"
 #include "CascadeMenu.h"
+#include "TabbedPanel.h"
 #include <X11/Xlib.h>
 #include <fontconfig/fontconfig.h>
 #include <iostream>
@@ -215,6 +216,18 @@ void GUIFramework::handleWidgetMouseButton(Widget* widget, int mouseX, int mouse
             boolWidget->toggle();
             return;
         }
+        ListBox* listBox = dynamic_cast<ListBox*>(widget);
+        if (listBox && listBox->checkClick(mouseX, mouseY)) {
+            listBox->handleMouseButton(mouseX, mouseY, true);
+            draggedListBox = listBox;
+            return;
+        }
+        ScrollBar* scrollBar = dynamic_cast<ScrollBar*>(widget);
+        if (scrollBar && scrollBar->checkClick(mouseX, mouseY)) {
+            scrollBar->handleMouseButton(mouseX, mouseY, true);
+            if (scrollBar->isDragging()) draggedScrollBar = scrollBar;
+            return;
+        }
         DropDownMenu* menu = dynamic_cast<DropDownMenu*>(widget);
         if (menu) {
             if (menu->checkClick(mouseX, mouseY)) menu->toggle();
@@ -228,6 +241,26 @@ void GUIFramework::handleWidgetMouseButton(Widget* widget, int mouseX, int mouse
         if (panel) {
             for (Widget* child : panel->getChildren()) {
                 handleWidgetMouseButton(child, mouseX, mouseY, isPressed);
+            }
+        }
+        TabbedPanel* tabbedPanel = dynamic_cast<TabbedPanel*>(widget);
+        if (tabbedPanel) {
+            int absY = tabbedPanel->getAbsoluteY();
+            int headerHeight = 30; // Default header height
+
+            // Check if clicking tab header
+            if (mouseY >= absY && mouseY < absY + headerHeight) {
+                // Tab header click - let TabbedPanel switch tabs
+                tabbedPanel->handleMouseButton(mouseX, mouseY, isPressed);
+            } else {
+                // Content area click - recursively check active panel's children
+                // Don't call tabbedPanel->handleMouseButton to avoid double-toggle
+                Panel* activePanel = tabbedPanel->getActivePanel();
+                if (activePanel) {
+                    for (Widget* child : activePanel->getChildren()) {
+                        handleWidgetMouseButton(child, mouseX, mouseY, isPressed);
+                    }
+                }
             }
         }
     } else {
@@ -361,6 +394,12 @@ void GUIFramework::handleMouseButton(mfb_mouse_button button, mfb_key_mod /*mod*
                                 dropdown->close();
                             }
                         }
+                    }
+                    TabbedPanel* tabbedPanel = dynamic_cast<TabbedPanel*>(widget);
+                    if (tabbedPanel && tabbedPanel->containsPoint(mouseX, mouseY)) {
+                        handleWidgetMouseButton(tabbedPanel, mouseX, mouseY, isPressed);
+                        widgetClicked = true;
+                        break;
                     }
                     Panel* panel = dynamic_cast<Panel*>(widget);
                     if (panel && panel->containsPoint(mouseX, mouseY)) {

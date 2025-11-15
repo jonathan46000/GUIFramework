@@ -2,7 +2,7 @@
 #include <iostream>
 
 int main() {
-    GUIFramework gui("GUI Framework - Complete Widget Test", 1024, 600);
+    GUIFramework gui("GUI Framework - Complete Widget Test", 1920, 1200);
     DialogManager dialogManager(gui);
 
     if (!gui.loadSystemFont(12)) {
@@ -77,7 +77,7 @@ int main() {
     });
     editMenu->add(pasteMenuItem);
 
-    MenuBar* bottomBar = new MenuBar(0, 575, 1024, 25, true);
+    MenuBar* bottomBar = new MenuBar(0, 1175, 1920, 25, true);
 
     CascadeMenu* contextMenu = new CascadeMenu(180, 25);
 
@@ -271,7 +271,7 @@ int main() {
     });
     standaloneMenu->add(testItem);
 
-    ScrollBar* horizontalScrollBar = new ScrollBar(50, 510, 350, ScrollBarOrientation::HORIZONTAL);
+    ScrollBar* horizontalScrollBar = new ScrollBar(680, 600, 250, ScrollBarOrientation::HORIZONTAL);
     horizontalScrollBar->setRange(0, 1000);
     horizontalScrollBar->setVisibleAmount(100);
     horizontalScrollBar->setValue(0);
@@ -279,7 +279,7 @@ int main() {
         std::cout << "Horizontal ScrollBar value: " << value << std::endl;
     });
 
-    TextLabel* hScrollLabel = new TextLabel("Horizontal scroll demo:", 50, 490);
+    TextLabel* hScrollLabel = new TextLabel("Horizontal scroll demo:", 50, 430);
 
     PushButton* standaloneButton = new PushButton("Exit Application", 860, 530, 140, 40);
     standaloneButton->setClickCallback([]() {
@@ -309,6 +309,192 @@ int main() {
     gui.add(hScrollLabel);
     gui.add(horizontalScrollBar);
     gui.add(listBox);
+
+    // TabbedPanel example - MUCH LARGER
+    TabbedPanel* tabbedPanel = new TabbedPanel(50, 490, 1820, 670);
+
+    // Tab 1: Info - LOTS OF WIDGETS
+    Panel* infoTab = new Panel(0, 0, 0, 0);
+    infoTab->setDrawBorder(false);
+    TextLabel* infoLabel = new TextLabel("Tab 1: Information Panel", 10, 10, 300, 25);
+    infoTab->add(infoLabel);
+
+    TextLabel* descLabel = new TextLabel("This tab demonstrates various label and text displays:", 10, 50, 500, 25);
+    infoTab->add(descLabel);
+
+    for (int i = 0; i < 20; i++) {
+        TextLabel* itemLabel = new TextLabel("Information item " + std::to_string(i+1) + ": Sample text content here",
+                                            20 + (i % 3) * 500, 90 + (i / 3) * 30, 450, 25);
+        infoTab->add(itemLabel);
+    }
+
+    PushButton* infoBtn1 = new PushButton("Action Button 1", 20, 350, 150, 35);
+    infoBtn1->setClickCallback([]() {
+        std::cout << "Info Tab: Action Button 1 clicked" << std::endl;
+    });
+    infoTab->add(infoBtn1);
+
+    PushButton* infoBtn2 = new PushButton("Action Button 2", 180, 350, 150, 35);
+    infoBtn2->setClickCallback([]() {
+        std::cout << "Info Tab: Action Button 2 clicked" << std::endl;
+    });
+    infoTab->add(infoBtn2);
+
+    PushButton* infoBtn3 = new PushButton("Action Button 3", 340, 350, 150, 35);
+    infoBtn3->setClickCallback([]() {
+        std::cout << "Info Tab: Action Button 3 clicked" << std::endl;
+    });
+    infoTab->add(infoBtn3);
+
+    tabbedPanel->addTab("Info", infoTab);
+
+    // Tab 2: Settings - LOTS OF WIDGETS
+    Panel* settingsTab = new Panel(0, 0, 0, 0);
+    settingsTab->setDrawBorder(false);
+    TextLabel* settingsLabel = new TextLabel("Tab 2: Settings & Configuration", 10, 10, 400, 25);
+    settingsTab->add(settingsLabel);
+
+    // Column 1: Checkboxes
+    TextLabel* checkHeader = new TextLabel("General Options:", 20, 50, 300, 25);
+    settingsTab->add(checkHeader);
+
+    for (int i = 0; i < 10; i++) {
+        CheckBox* check = new CheckBox("Option " + std::to_string(i+1), 30, 80 + i * 30);
+        check->setChangeCallback([i](bool checked) {
+            std::cout << "Settings Tab: Option " << (i+1) << " = " << (checked ? "ON" : "OFF") << std::endl;
+        });
+        settingsTab->add(check);
+    }
+
+    // Column 2: Radio buttons
+    TextLabel* radioHeader = new TextLabel("Display Mode:", 400, 50, 300, 25);
+    settingsTab->add(radioHeader);
+
+    static std::vector<RadioButton*> displayGroup;
+    displayGroup.clear();
+    std::vector<std::string> displayModes = {"Mode A", "Mode B", "Mode C", "Mode D", "Mode E"};
+    for (size_t i = 0; i < displayModes.size(); i++) {
+        RadioButton* radio = new RadioButton(displayModes[i], 410, 80 + i * 30);
+        radio->setChangeCallback([i](bool checked) {
+            if (checked) std::cout << "Settings Tab: Display mode changed to " << (i+1) << std::endl;
+        });
+        displayGroup.push_back(radio);
+        settingsTab->add(radio);
+    }
+    for (RadioButton* r : displayGroup) {
+        r->setGroup(&displayGroup);
+    }
+
+    // Text inputs
+    TextLabel* inputHeader = new TextLabel("Configuration Values:", 750, 50, 300, 25);
+    settingsTab->add(inputHeader);
+
+    for (int i = 0; i < 8; i++) {
+        TextLabel* lbl = new TextLabel("Parameter " + std::to_string(i+1) + ":", 760, 85 + i * 50, 150, 25);
+        settingsTab->add(lbl);
+        TextBox* txt = new TextBox(920, 80 + i * 50, 250, 30);
+        txt->setChangeCallback([i](const std::string& text) {
+            std::cout << "Settings Tab: Parameter " << (i+1) << " = " << text << std::endl;
+        });
+        settingsTab->add(txt);
+    }
+
+    PushButton* applyBtn = new PushButton("Apply Settings", 20, 550, 180, 40);
+    applyBtn->setClickCallback([]() {
+        std::cout << "Settings Tab: Apply button clicked" << std::endl;
+    });
+    settingsTab->add(applyBtn);
+
+    PushButton* resetBtn = new PushButton("Reset to Defaults", 220, 550, 180, 40);
+    resetBtn->setClickCallback([]() {
+        std::cout << "Settings Tab: Reset button clicked" << std::endl;
+    });
+    settingsTab->add(resetBtn);
+
+    tabbedPanel->addTab("Settings", settingsTab);
+
+    // Tab 3: Data - TESTING LISTBOX
+    Panel* dataTab = new Panel(0, 0, 0, 0);
+    dataTab->setDrawBorder(false);
+    TextLabel* dataLabel = new TextLabel("Tab 3: Data Entry", 10, 10, 400, 25);
+    dataTab->add(dataLabel);
+
+    // Just text inputs
+    for (int row = 0; row < 3; row++) {
+        for (int col = 0; col < 2; col++) {
+            int idx = row * 2 + col + 1;
+            TextLabel* lbl = new TextLabel("Field " + std::to_string(idx) + ":",
+                                          20 + col * 350, 55 + row * 60, 100, 25);
+            dataTab->add(lbl);
+            TextBox* txt = new TextBox(130 + col * 350, 50 + row * 60, 200, 30);
+            txt->setChangeCallback([idx](const std::string& text) {
+                std::cout << "Data Tab: Field " << idx << " = " << text << std::endl;
+            });
+            dataTab->add(txt);
+        }
+    }
+
+    // Test: Add ListBox
+    TextLabel* listLabel = new TextLabel("Data Items:", 20, 250, 200, 25);
+    dataTab->add(listLabel);
+
+    ListBox* dataList = new ListBox(20, 280, 400, 180);
+    for (int i = 1; i <= 50; i++) {
+        dataList->addItem("Data Item " + std::to_string(i));
+    }
+    dataList->setSelectionCallback([](int index, const std::string& item) {
+        std::cout << "Data Tab: Selected " << item << " at index " << index << std::endl;
+    });
+    dataTab->add(dataList);
+
+    // Add MultiLineTextBox to test
+    TextLabel* multiLabel = new TextLabel("Notes:", 450, 250, 200, 25);
+    dataTab->add(multiLabel);
+
+    MultiLineTextBox* dataMultiText = new MultiLineTextBox(450, 280, 500, 180);
+    dataMultiText->setChangeCallback([](const std::string&) {
+        std::cout << "Data Tab: MultiLine changed" << std::endl;
+    });
+    dataTab->add(dataMultiText);
+
+    // Action buttons
+    PushButton* saveBtn = new PushButton("Save Data", 20, 480, 150, 40);
+    saveBtn->setClickCallback([]() {
+        std::cout << "Data Tab: Save button clicked" << std::endl;
+    });
+    dataTab->add(saveBtn);
+
+    PushButton* loadBtn = new PushButton("Load Data", 190, 480, 150, 40);
+    loadBtn->setClickCallback([]() {
+        std::cout << "Data Tab: Load button clicked" << std::endl;
+    });
+    dataTab->add(loadBtn);
+
+    PushButton* clearBtn = new PushButton("Clear All", 360, 480, 150, 40);
+    clearBtn->setClickCallback([]() {
+        std::cout << "Data Tab: Clear button clicked" << std::endl;
+    });
+    dataTab->add(clearBtn);
+
+    // Status indicators
+    TextLabel* statusLabel = new TextLabel("Status:", 550, 480, 80, 25);
+    dataTab->add(statusLabel);
+
+    CheckBox* autoSave = new CheckBox("Auto-save", 640, 480);
+    autoSave->setChangeCallback([](bool checked) {
+        std::cout << "Data Tab: Auto-save = " << (checked ? "ON" : "OFF") << std::endl;
+    });
+    dataTab->add(autoSave);
+
+    CheckBox* validateInput = new CheckBox("Validate", 640, 510);
+    validateInput->setChangeCallback([](bool checked) {
+        std::cout << "Data Tab: Validate = " << (checked ? "ON" : "OFF") << std::endl;
+    });
+    dataTab->add(validateInput);
+
+    tabbedPanel->addTab("Data", dataTab);
+
+    gui.add(tabbedPanel);
 
     gui.addContextMenu(contextMenu);
 

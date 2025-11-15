@@ -21,6 +21,7 @@
 #include "FontRenderer.h"
 #include "DialogManager.h"
 #include "ImageWidget.h"
+#include "TabbedPanel.h"
 #include <vector>
 #include <string>
 #include <set>
