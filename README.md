@@ -8,7 +8,7 @@ A lightweight, modern C++ GUI framework for Linux built on top of MiniFB with co
 
 ![Example Application](Resources/GUI_FRAMEWORK_PIC.png)
 
-![Example Application 2](Resources/GUI_FrameWork3.png)
+![Example Application 2](Resources/GUIFrameWork3.png)
 
 This framework provides a complete set of widgets for building desktop applications:
 
