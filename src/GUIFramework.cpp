@@ -1,5 +1,6 @@
 #include "GUIFramework.h"
 #include "DropDownMenu.h"
+#include "ComboBox.h"
 #include "CascadeMenu.h"
 #include "TabbedPanel.h"
 #include <X11/Xlib.h>
@@ -237,6 +238,25 @@ void GUIFramework::handleWidgetMouseButton(Widget* widget, int mouseX, int mouse
             }
             return;
         }
+        ComboBox* comboBox = dynamic_cast<ComboBox*>(widget);
+        if (comboBox) {
+            if (comboBox->checkClick(mouseX, mouseY) || comboBox->getIsOpen()) {
+                if (focusedWidget && focusedWidget != comboBox) {
+                    TextBox* oldTextBox = dynamic_cast<TextBox*>(focusedWidget);
+                    if (oldTextBox) oldTextBox->setFocus(false);
+                    MultiLineTextBox* oldMultiLine = dynamic_cast<MultiLineTextBox*>(focusedWidget);
+                    if (oldMultiLine) oldMultiLine->setFocus(false);
+                    ComboBox* oldComboBox = dynamic_cast<ComboBox*>(focusedWidget);
+                    if (oldComboBox) oldComboBox->setFocus(false);
+                }
+                comboBox->setFocus(true);
+                comboBox->handleMouseButton(mouseX, mouseY, isPressed);
+                focusedWidget = comboBox;
+                lastFocusedWidget = comboBox;
+                return;
+            }
+            return;
+        }
         Panel* panel = dynamic_cast<Panel*>(widget);
         if (panel) {
             for (Widget* child : panel->getChildren()) {
@@ -394,6 +414,12 @@ void GUIFramework::handleMouseButton(mfb_mouse_button button, mfb_key_mod /*mod*
                                 dropdown->close();
                             }
                         }
+                    }
+                    ComboBox* comboBox = dynamic_cast<ComboBox*>(widget);
+                    if (comboBox && (comboBox->checkClick(mouseX, mouseY) || comboBox->getIsOpen())) {
+                        handleWidgetMouseButton(comboBox, mouseX, mouseY, isPressed);
+                        widgetClicked = true;
+                        break;
                     }
                     TabbedPanel* tabbedPanel = dynamic_cast<TabbedPanel*>(widget);
                     if (tabbedPanel && tabbedPanel->containsPoint(mouseX, mouseY)) {
@@ -598,7 +624,8 @@ void GUIFramework::run() {
         for (Widget* widget : widgets) {
             MenuBar* menuBar = dynamic_cast<MenuBar*>(widget);
             DropDownMenu* dropdown = dynamic_cast<DropDownMenu*>(widget);
-            if (!menuBar && !dropdown) widget->draw(buffer, width, height);
+            ComboBox* comboBox = dynamic_cast<ComboBox*>(widget);
+            if (!menuBar && !dropdown && !(comboBox && comboBox->getIsOpen())) widget->draw(buffer, width, height);
         }
         for (Widget* widget : widgets) {
             DropDownMenu* dropdown = dynamic_cast<DropDownMenu*>(widget);
@@ -613,6 +640,30 @@ void GUIFramework::run() {
         for (Widget* widget : widgets) {
             DropDownMenu* dropdown = dynamic_cast<DropDownMenu*>(widget);
             if (dropdown && dropdown->getIsOpen()) dropdown->draw(buffer, width, height);
+        }
+        for (Widget* widget : widgets) {
+            ComboBox* comboBox = dynamic_cast<ComboBox*>(widget);
+            if (comboBox && comboBox->getIsOpen()) comboBox->drawDropdownMenu(buffer, width, height);
+        }
+        // Also check nested ComboBoxes in panels/tabs
+        for (Widget* widget : widgets) {
+            Panel* panel = dynamic_cast<Panel*>(widget);
+            if (panel) {
+                for (Widget* child : panel->getChildren()) {
+                    ComboBox* comboBox = dynamic_cast<ComboBox*>(child);
+                    if (comboBox && comboBox->getIsOpen()) comboBox->drawDropdownMenu(buffer, width, height);
+                }
+            }
+            TabbedPanel* tabPanel = dynamic_cast<TabbedPanel*>(widget);
+            if (tabPanel) {
+                Panel* activePanel = tabPanel->getActivePanel();
+                if (activePanel) {
+                    for (Widget* child : activePanel->getChildren()) {
+                        ComboBox* comboBox = dynamic_cast<ComboBox*>(child);
+                        if (comboBox && comboBox->getIsOpen()) comboBox->drawDropdownMenu(buffer, width, height);
+                    }
+                }
+            }
         }
 
         mfb_update_state state = mfb_update_ex(window, buffer, width, height);

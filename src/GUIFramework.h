@@ -22,6 +22,7 @@
 #include "DialogManager.h"
 #include "ImageWidget.h"
 #include "TabbedPanel.h"
+#include "ComboBox.h"
 #include <vector>
 #include <string>
 #include <set>
