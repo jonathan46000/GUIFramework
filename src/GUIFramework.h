@@ -25,6 +25,7 @@
 #include "ComboBox.h"
 #include "StatusBar.h"
 #include "ProgressBar.h"
+#include "Spinner.h"
 #include <vector>
 #include <string>
 #include <set>

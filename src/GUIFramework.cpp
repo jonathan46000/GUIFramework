@@ -260,6 +260,11 @@ void GUIFramework::handleWidgetMouseButton(Widget* widget, int mouseX, int mouse
             }
             return;
         }
+        Spinner* spinner = dynamic_cast<Spinner*>(widget);
+        if (spinner && spinner->checkClick(mouseX, mouseY)) {
+            spinner->handleMouseButton(mouseX, mouseY, isPressed);
+            return;
+        }
         Panel* panel = dynamic_cast<Panel*>(widget);
         if (panel) {
             for (Widget* child : panel->getChildren()) {

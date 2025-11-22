@@ -55,7 +55,6 @@ int main() {
     PushButton* showDialogButton = new PushButton("Show Dialog", 50, 450, 120, 30);
     DropDownMenu* standaloneMenu = new DropDownMenu("Standalone", 100, 30, 180, 450);
     MenuItem* testItem = new MenuItem("Test Item");
-    ScrollBar* horizontalScrollBar = new ScrollBar(680, 600, 250, ScrollBarOrientation::HORIZONTAL);
     PushButton* standaloneButton = new PushButton("Exit Application", 860, 530, 140, 40);
     ListBox* listBox = new ListBox(450, 320, 300, 150);
 
@@ -95,6 +94,8 @@ int main() {
     TextLabel* infoItem4 = new TextLabel("Information item 4: Sample text content", 20, 180, 450, 25);
     TextLabel* infoItem5 = new TextLabel("Information item 5: Sample text content", 20, 210, 450, 25);
     PushButton* infoBtn1 = new PushButton("Action Button", 20, 250, 150, 35);
+    TextLabel* scrollLabel = new TextLabel("Horizontal ScrollBar demo:", 600, 90, 300, 25);
+    ScrollBar* horizontalScrollBar = new ScrollBar(600, 120, 400, ScrollBarOrientation::HORIZONTAL);
 
     // Settings tab widgets
     Panel* settingsTab = new Panel(0, 0, 0, 0);
@@ -117,6 +118,8 @@ int main() {
     TextBox* paramText3 = new TextBox(620, 160, 200, 30);
     TextLabel* comboLabel = new TextLabel("Theme:", 510, 215, 100, 25);
     ComboBox* themeCombo = new ComboBox(620, 210, 200, 30);
+    TextLabel* spinnerLabel = new TextLabel("Count:", 510, 255, 100, 25);
+    Spinner* countSpinner = new Spinner(620, 250, 150, 30);
     PushButton* applyBtn = new PushButton("Apply Settings", 20, 300, 180, 40);
 
     // Data tab widgets
@@ -132,8 +135,8 @@ int main() {
     MultiLineTextBox* dataMultiText = new MultiLineTextBox(350, 180, 400, 120);
     TextLabel* progressLabel = new TextLabel("Notes capacity:", 770, 150, 200, 25);
     ProgressBar* notesProgress = new ProgressBar(770, 180, 200, 30);
-    PushButton* saveBtn = new PushButton("Save", 20, 320, 100, 30);
-    CheckBox* autoSave = new CheckBox("Auto-save", 150, 320);
+    PushButton* saveBtn = new PushButton("Save", 20, 310, 100, 30);
+    CheckBox* autoSave = new CheckBox("Auto-save", 150, 310);
 
     // ============================================================================
     // SECTION 2: WIDGET SETUP & CONFIGURATION
@@ -186,6 +189,12 @@ int main() {
     themeCombo->addItem("High Contrast");
     themeCombo->addItem("Solarized");
     themeCombo->setSelectedIndex(0);
+
+    // Spinner setup
+    countSpinner->setMinValue(0.0);
+    countSpinner->setMaxValue(100.0);
+    countSpinner->setStep(1.0);
+    countSpinner->setValue(10.0);
 
     // Panel settings
     textBoxPanel->setContextMenu(contextMenu);
@@ -390,6 +399,12 @@ int main() {
         bottomBar->setSection(0, "Theme text: " + text);
     });
 
+    // Spinner callback
+    countSpinner->setChangeCallback([bottomBar](double value) {
+        std::cout << "Settings Tab: Count = " << value << std::endl;
+        bottomBar->setSection(0, "Count: " + std::to_string(static_cast<int>(value)));
+    });
+
     // Apply button callback
     applyBtn->setClickCallback([bottomBar]() {
         std::cout << "Settings Tab: Apply button clicked" << std::endl;
@@ -521,6 +536,8 @@ int main() {
     infoTab->add(infoItem4);
     infoTab->add(infoItem5);
     infoTab->add(infoBtn1);
+    infoTab->add(scrollLabel);
+    infoTab->add(horizontalScrollBar);
 
     // Build Settings tab
     settingsTab->add(settingsLabel);
@@ -541,6 +558,8 @@ int main() {
     settingsTab->add(paramText3);
     settingsTab->add(comboLabel);
     settingsTab->add(themeCombo);
+    settingsTab->add(spinnerLabel);
+    settingsTab->add(countSpinner);
     settingsTab->add(applyBtn);
 
     // Build Data tab
@@ -577,7 +596,6 @@ int main() {
     gui.add(showDialogButton);
     gui.add(standaloneMenu);
     gui.add(standaloneButton);
-    gui.add(horizontalScrollBar);
     gui.add(listBox);
     gui.add(tabbedPanel);
 
