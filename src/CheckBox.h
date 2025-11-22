@@ -12,6 +12,7 @@ public:
     CheckBox(const std::string& label, int x, int y, int boxSize);
 
     void draw(uint32_t* buffer, int bufferWidth, int bufferHeight) override;
+    bool checkClick(int mouseX, int mouseY) override;
 
     void setBoxSize(int size);
     int getBoxSize() const { return boxSize; }

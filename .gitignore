@@ -1,6 +1,8 @@
 # Build directories
 build/
 bin/
+splitter/bin
+splitter/build
 
 # Object files
 *.o
@@ -22,3 +24,6 @@ gui_app
 # OS files
 .DS_Store
 Thumbs.db
+
+# Example Makefile
+splitter/Makefile

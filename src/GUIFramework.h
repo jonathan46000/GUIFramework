@@ -26,6 +26,7 @@
 #include "StatusBar.h"
 #include "ProgressBar.h"
 #include "Spinner.h"
+#include "Splitter.h"
 #include <vector>
 #include <string>
 #include <set>
@@ -44,6 +45,7 @@ private:
     PushButton* pressedButton;
     ScrollBar* draggedScrollBar;
     ListBox* draggedListBox;
+    Splitter* draggedSplitter;
     std::vector<Widget*> widgets;
     std::vector<MenuBar*> menuBars;
     std::vector<StatusBar*> statusBars;

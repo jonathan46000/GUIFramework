@@ -58,3 +58,10 @@ void CheckBox::setBoxSize(int size) {
     boxSize = size;
     height = size;
 }
+
+bool CheckBox::checkClick(int mouseX, int mouseY) {
+    int absX = getAbsoluteX();
+    int absY = getAbsoluteY();
+    return mouseX >= absX && mouseX < absX + boxSize &&
+           mouseY >= absY && mouseY < absY + boxSize;
+}
