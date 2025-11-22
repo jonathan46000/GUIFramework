@@ -17,7 +17,8 @@ SRCS = $(SRC_DIR)/main.cpp $(SRC_DIR)/GUIFramework.cpp $(SRC_DIR)/Widget.cpp \
        $(SRC_DIR)/ListBox.cpp $(SRC_DIR)/ContextMenu.cpp $(SRC_DIR)/CascadeMenu.cpp \
        $(SRC_DIR)/DialogueBox.cpp $(SRC_DIR)/FileDialog.cpp $(SRC_DIR)/DialogManager.cpp \
        $(SRC_DIR)/ImageLoader.cpp $(SRC_DIR)/ImageWidget.cpp $(SRC_DIR)/MultiLineTextBox.cpp \
-       $(SRC_DIR)/TabbedPanel.cpp $(SRC_DIR)/ComboBox.cpp
+       $(SRC_DIR)/TabbedPanel.cpp $(SRC_DIR)/ComboBox.cpp $(SRC_DIR)/StatusBar.cpp \
+       $(SRC_DIR)/ProgressBar.cpp
 
 # Object files
 OBJS = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SRCS))

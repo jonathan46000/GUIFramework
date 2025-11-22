@@ -23,6 +23,8 @@
 #include "ImageWidget.h"
 #include "TabbedPanel.h"
 #include "ComboBox.h"
+#include "StatusBar.h"
+#include "ProgressBar.h"
 #include <vector>
 #include <string>
 #include <set>
@@ -43,6 +45,7 @@ private:
     ListBox* draggedListBox;
     std::vector<Widget*> widgets;
     std::vector<MenuBar*> menuBars;
+    std::vector<StatusBar*> statusBars;
     std::vector<ContextMenu*> contextMenus;
     FontRenderer* fontRenderer;
     std::string loadedFontPath;

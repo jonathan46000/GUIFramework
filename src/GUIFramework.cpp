@@ -138,6 +138,9 @@ void GUIFramework::handleResize(int newWidth, int newHeight) {
     for (MenuBar* menuBar : menuBars) {
         menuBar->onWindowResize(width, height);
     }
+    for (StatusBar* statusBar : statusBars) {
+        statusBar->onWindowResize(width, height);
+    }
 }
 
 Widget* GUIFramework::getTargetWidget() {
@@ -578,7 +581,15 @@ void GUIFramework::handleKey(mfb_key key, mfb_key_mod mod, bool isPressed) {
 void GUIFramework::add(Widget* widget) {
     widget->setFontRenderer(fontRenderer);
     MenuBar* menuBar = dynamic_cast<MenuBar*>(widget);
-    if (menuBar) menuBars.push_back(menuBar);
+    if (menuBar) {
+        menuBars.push_back(menuBar);
+        menuBar->onWindowResize(width, height);
+    }
+    StatusBar* statusBar = dynamic_cast<StatusBar*>(widget);
+    if (statusBar) {
+        statusBars.push_back(statusBar);
+        statusBar->onWindowResize(width, height);
+    }
     widgets.push_back(widget);
 }
 

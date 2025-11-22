@@ -15,7 +15,7 @@ int main() {
 
     // Menu bars
     MenuBar* topBar = new MenuBar(0, 0, 1024, 30, false);
-    MenuBar* bottomBar = new MenuBar(0, 1175, 1920, 25, true);
+    StatusBar* bottomBar = new StatusBar(25);
 
     // File menu items
     DropDownMenu* fileMenu = new DropDownMenu("File", 60, 26);
@@ -130,12 +130,22 @@ int main() {
     ListBox* dataList = new ListBox(20, 180, 300, 120);
     TextLabel* multiLabel = new TextLabel("Notes:", 350, 150, 200, 25);
     MultiLineTextBox* dataMultiText = new MultiLineTextBox(350, 180, 400, 120);
+    TextLabel* progressLabel = new TextLabel("Notes capacity:", 770, 150, 200, 25);
+    ProgressBar* notesProgress = new ProgressBar(770, 180, 200, 30);
     PushButton* saveBtn = new PushButton("Save", 20, 320, 100, 30);
     CheckBox* autoSave = new CheckBox("Auto-save", 150, 320);
 
     // ============================================================================
     // SECTION 2: WIDGET SETUP & CONFIGURATION
     // ============================================================================
+
+    // StatusBar sections
+    bottomBar->addSection(200);  // Section 0: Status message
+    bottomBar->addSection(150);  // Section 1: Position info
+    bottomBar->addSection(100);  // Section 2: Extra info
+    bottomBar->setSection(0, "Ready");
+    bottomBar->setSection(1, "");
+    bottomBar->setSection(2, "");
 
     // Image widget check
     if (!imageWidget->hasImage()) {
@@ -165,6 +175,10 @@ int main() {
         dataList->addItem("Data Item " + std::to_string(i));
     }
 
+    // ProgressBar setup - track notes textbox capacity (max 1000 chars)
+    notesProgress->setMaxValue(1000.0);
+    notesProgress->setValue(0.0);
+
     // ComboBox items
     themeCombo->addItem("Default");
     themeCombo->addItem("Dark");
@@ -184,204 +198,257 @@ int main() {
     // ============================================================================
 
     // File menu callbacks
-    newItem->setCallback([]() {
+    newItem->setCallback([bottomBar]() {
         std::cout << "New file clicked!" << std::endl;
+        bottomBar->setSection(0, "New file clicked!");
     });
-    openItem->setCallback([&dialogManager]() {
+    openItem->setCallback([&dialogManager, bottomBar]() {
         std::cout << "Open file clicked!" << std::endl;
+        bottomBar->setSection(0, "Open file clicked!");
         dialogManager.showOpenFileDialog();
     });
-    saveCurrentItem->setCallback([]() {
+    saveCurrentItem->setCallback([bottomBar]() {
         std::cout << "Save current file!" << std::endl;
+        bottomBar->setSection(0, "File saved!");
     });
-    saveAsItem->setCallback([&dialogManager]() {
+    saveAsItem->setCallback([&dialogManager, bottomBar]() {
         std::cout << "Save As clicked!" << std::endl;
+        bottomBar->setSection(0, "Save As clicked!");
         dialogManager.showSaveFileDialog();
     });
-    exitItem->setCallback([]() {
+    exitItem->setCallback([bottomBar]() {
         std::cout << "Exit clicked!" << std::endl;
+        bottomBar->setSection(0, "Exiting...");
         exit(0);
     });
 
     // Edit menu callbacks
-    cutMenuItem->setCallback([&gui]() {
+    cutMenuItem->setCallback([&gui, bottomBar]() {
         gui.cutFromTextBox();
         std::cout << "Cut from Edit menu" << std::endl;
+        bottomBar->setSection(0, "Cut");
     });
-    copyMenuItem->setCallback([&gui]() {
+    copyMenuItem->setCallback([&gui, bottomBar]() {
         gui.copyFromTextBox();
         std::cout << "Copy from Edit menu" << std::endl;
+        bottomBar->setSection(0, "Copy");
     });
-    pasteMenuItem->setCallback([&gui]() {
+    pasteMenuItem->setCallback([&gui, bottomBar]() {
         gui.pasteToTextBox();
         std::cout << "Paste from Edit menu" << std::endl;
+        bottomBar->setSection(0, "Paste");
     });
 
     // Context menu callbacks
-    ctxCopy->setCallback([&gui]() {
+    ctxCopy->setCallback([&gui, bottomBar]() {
         gui.copyFromTextBox();
         std::cout << "Context menu: Copy" << std::endl;
+        bottomBar->setSection(0, "Context: Copy");
     });
-    ctxPaste->setCallback([&gui]() {
+    ctxPaste->setCallback([&gui, bottomBar]() {
         gui.pasteToTextBox();
         std::cout << "Context menu: Paste" << std::endl;
+        bottomBar->setSection(0, "Context: Paste");
     });
-    ctxCut->setCallback([&gui]() {
+    ctxCut->setCallback([&gui, bottomBar]() {
         gui.cutFromTextBox();
         std::cout << "Context menu: Cut" << std::endl;
+        bottomBar->setSection(0, "Context: Cut");
     });
 
     // TextBox callbacks
-    textBox1->setChangeCallback([](const std::string& text) {
+    textBox1->setChangeCallback([bottomBar](const std::string& text) {
         std::cout << "TextBox 1: " << text << std::endl;
+        bottomBar->setSection(0, "TextBox 1: " + text);
     });
-    textBox2->setChangeCallback([](const std::string& text) {
+    textBox2->setChangeCallback([bottomBar](const std::string& text) {
         std::cout << "TextBox 2: " << text << std::endl;
+        bottomBar->setSection(0, "TextBox 2: " + text);
     });
 
     // Panel 2 checkbox callbacks
-    checkbox1->setChangeCallback([](bool checked) {
+    checkbox1->setChangeCallback([bottomBar](bool checked) {
         std::cout << "Notifications: " << (checked ? "ON" : "OFF") << std::endl;
+        bottomBar->setSection(0, std::string("Notifications: ") + (checked ? "ON" : "OFF"));
     });
-    checkbox2->setChangeCallback([](bool checked) {
+    checkbox2->setChangeCallback([bottomBar](bool checked) {
         std::cout << "Auto-save: " << (checked ? "ON" : "OFF") << std::endl;
+        bottomBar->setSection(0, std::string("Auto-save: ") + (checked ? "ON" : "OFF"));
     });
-    checkbox3->setChangeCallback([](bool checked) {
+    checkbox3->setChangeCallback([bottomBar](bool checked) {
         std::cout << "Dark mode: " << (checked ? "ON" : "OFF") << std::endl;
+        bottomBar->setSection(0, std::string("Dark mode: ") + (checked ? "ON" : "OFF"));
     });
 
     // Radio button callbacks
     for (RadioButton* r : sizeGroup) {
-        r->setChangeCallback([](bool checked) {
-            if (checked) std::cout << "Size option changed" << std::endl;
+        r->setChangeCallback([bottomBar](bool checked) {
+            if (checked) {
+                std::cout << "Size option changed" << std::endl;
+                bottomBar->setSection(0, "Size option changed");
+            }
         });
     }
 
     // MultiLine textbox callback
-    multiLineTextBox->setChangeCallback([](const std::string& text) {
+    multiLineTextBox->setChangeCallback([bottomBar](const std::string& text) {
         std::cout << "MultiLine changed (length=" << text.length() << ")" << std::endl;
+        bottomBar->setSection(0, "MultiLine: " + std::to_string(text.length()) + " chars");
     });
 
     // Button callbacks
-    showDialogButton->setClickCallback([&dialogManager]() {
+    showDialogButton->setClickCallback([&dialogManager, bottomBar]() {
         std::cout << "Showing dialog!" << std::endl;
+        bottomBar->setSection(0, "Showing dialog!");
         dialogManager.showTestDialog();
     });
-    standaloneButton->setClickCallback([]() {
+    standaloneButton->setClickCallback([bottomBar]() {
         std::cout << "Exit button clicked!" << std::endl;
+        bottomBar->setSection(0, "Exiting application...");
         exit(0);
     });
 
     // Standalone menu callback
-    testItem->setCallback([]() {
+    testItem->setCallback([bottomBar]() {
         std::cout << "Standalone menu item clicked!" << std::endl;
+        bottomBar->setSection(0, "Standalone menu clicked!");
     });
 
     // Scrollbar callback
-    horizontalScrollBar->setChangeCallback([](double value) {
+    horizontalScrollBar->setChangeCallback([bottomBar](double value) {
         std::cout << "Horizontal ScrollBar value: " << value << std::endl;
+        bottomBar->setSection(0, "ScrollBar: " + std::to_string(static_cast<int>(value)));
     });
 
     // ListBox callback
-    listBox->setSelectionCallback([](int index, const std::string& item) {
+    listBox->setSelectionCallback([bottomBar](int index, const std::string& item) {
         std::cout << "Selected item " << index << ": " << item << std::endl;
+        bottomBar->setSection(0, "Selected: " + item);
     });
 
     // Info tab button callback
-    infoBtn1->setClickCallback([]() {
+    infoBtn1->setClickCallback([bottomBar]() {
         std::cout << "Info Tab: Action Button clicked" << std::endl;
+        bottomBar->setSection(0, "Info: Action Button clicked");
     });
 
     // Settings tab checkbox callbacks
-    settingsCheck1->setChangeCallback([](bool checked) {
+    settingsCheck1->setChangeCallback([bottomBar](bool checked) {
         std::cout << "Settings Tab: Option 1 = " << (checked ? "ON" : "OFF") << std::endl;
+        bottomBar->setSection(0, std::string("Settings Option 1: ") + (checked ? "ON" : "OFF"));
     });
-    settingsCheck2->setChangeCallback([](bool checked) {
+    settingsCheck2->setChangeCallback([bottomBar](bool checked) {
         std::cout << "Settings Tab: Option 2 = " << (checked ? "ON" : "OFF") << std::endl;
+        bottomBar->setSection(0, std::string("Settings Option 2: ") + (checked ? "ON" : "OFF"));
     });
-    settingsCheck3->setChangeCallback([](bool checked) {
+    settingsCheck3->setChangeCallback([bottomBar](bool checked) {
         std::cout << "Settings Tab: Option 3 = " << (checked ? "ON" : "OFF") << std::endl;
+        bottomBar->setSection(0, std::string("Settings Option 3: ") + (checked ? "ON" : "OFF"));
     });
 
     // Settings tab radio callbacks
-    settingsRadio1->setChangeCallback([](bool checked) {
-        if (checked) std::cout << "Settings Tab: Display mode A" << std::endl;
+    settingsRadio1->setChangeCallback([bottomBar](bool checked) {
+        if (checked) {
+            std::cout << "Settings Tab: Display mode A" << std::endl;
+            bottomBar->setSection(0, "Display mode: A");
+        }
     });
-    settingsRadio2->setChangeCallback([](bool checked) {
-        if (checked) std::cout << "Settings Tab: Display mode B" << std::endl;
+    settingsRadio2->setChangeCallback([bottomBar](bool checked) {
+        if (checked) {
+            std::cout << "Settings Tab: Display mode B" << std::endl;
+            bottomBar->setSection(0, "Display mode: B");
+        }
     });
-    settingsRadio3->setChangeCallback([](bool checked) {
-        if (checked) std::cout << "Settings Tab: Display mode C" << std::endl;
+    settingsRadio3->setChangeCallback([bottomBar](bool checked) {
+        if (checked) {
+            std::cout << "Settings Tab: Display mode C" << std::endl;
+            bottomBar->setSection(0, "Display mode: C");
+        }
     });
 
     // Settings tab textbox callbacks
-    paramText1->setChangeCallback([](const std::string& text) {
+    paramText1->setChangeCallback([bottomBar](const std::string& text) {
         std::cout << "Settings Tab: Parameter 1 = " << text << std::endl;
+        bottomBar->setSection(0, "Param 1: " + text);
     });
-    paramText2->setChangeCallback([](const std::string& text) {
+    paramText2->setChangeCallback([bottomBar](const std::string& text) {
         std::cout << "Settings Tab: Parameter 2 = " << text << std::endl;
+        bottomBar->setSection(0, "Param 2: " + text);
     });
-    paramText3->setChangeCallback([](const std::string& text) {
+    paramText3->setChangeCallback([bottomBar](const std::string& text) {
         std::cout << "Settings Tab: Parameter 3 = " << text << std::endl;
+        bottomBar->setSection(0, "Param 3: " + text);
     });
 
     // ComboBox callbacks
-    themeCombo->setSelectionCallback([](int index, const std::string& item) {
+    themeCombo->setSelectionCallback([bottomBar](int index, const std::string& item) {
         std::cout << "Settings Tab: Theme selected: " << item << " (index " << index << ")" << std::endl;
+        bottomBar->setSection(0, "Theme: " + item);
     });
-    themeCombo->setChangeCallback([](const std::string& text) {
+    themeCombo->setChangeCallback([bottomBar](const std::string& text) {
         std::cout << "Settings Tab: Theme text changed: " << text << std::endl;
+        bottomBar->setSection(0, "Theme text: " + text);
     });
 
     // Apply button callback
-    applyBtn->setClickCallback([]() {
+    applyBtn->setClickCallback([bottomBar]() {
         std::cout << "Settings Tab: Apply button clicked" << std::endl;
+        bottomBar->setSection(0, "Settings applied!");
     });
 
     // Data tab textbox callbacks
-    dataField1->setChangeCallback([](const std::string& text) {
+    dataField1->setChangeCallback([bottomBar](const std::string& text) {
         std::cout << "Data Tab: Field 1 = " << text << std::endl;
+        bottomBar->setSection(0, "Data Field 1: " + text);
     });
-    dataField2->setChangeCallback([](const std::string& text) {
+    dataField2->setChangeCallback([bottomBar](const std::string& text) {
         std::cout << "Data Tab: Field 2 = " << text << std::endl;
+        bottomBar->setSection(0, "Data Field 2: " + text);
     });
 
     // Data tab ListBox callback
-    dataList->setSelectionCallback([](int index, const std::string& item) {
+    dataList->setSelectionCallback([bottomBar](int index, const std::string& item) {
         std::cout << "Data Tab: Selected " << item << " at index " << index << std::endl;
+        bottomBar->setSection(0, "Selected: " + item);
     });
 
     // Data tab MultiLineTextBox callback
-    dataMultiText->setChangeCallback([](const std::string&) {
-        std::cout << "Data Tab: MultiLine changed" << std::endl;
+    dataMultiText->setChangeCallback([notesProgress](const std::string& text) {
+        notesProgress->setValue(static_cast<double>(text.length()));
     });
 
     // Data tab button callback
-    saveBtn->setClickCallback([]() {
+    saveBtn->setClickCallback([bottomBar]() {
         std::cout << "Data Tab: Save clicked" << std::endl;
+        bottomBar->setSection(0, "Data saved!");
     });
 
     // Data tab checkbox callback
-    autoSave->setChangeCallback([](bool checked) {
+    autoSave->setChangeCallback([bottomBar](bool checked) {
         std::cout << "Data Tab: Auto-save = " << (checked ? "ON" : "OFF") << std::endl;
+        bottomBar->setSection(0, std::string("Auto-save: ") + (checked ? "ON" : "OFF"));
     });
 
     // TextBox context menu callbacks
-    ctxCutText->setCallback([&gui]() {
+    ctxCutText->setCallback([&gui, bottomBar]() {
         gui.cutFromTextBox();
         std::cout << "TextBox context menu: Cut Text" << std::endl;
+        bottomBar->setSection(0, "TextBox: Cut");
     });
-    ctxCopyText->setCallback([&gui]() {
+    ctxCopyText->setCallback([&gui, bottomBar]() {
         gui.copyFromTextBox();
         std::cout << "TextBox context menu: Copy Text" << std::endl;
+        bottomBar->setSection(0, "TextBox: Copy");
     });
-    ctxPasteText->setCallback([&gui]() {
+    ctxPasteText->setCallback([&gui, bottomBar]() {
         gui.pasteToTextBox();
         std::cout << "TextBox context menu: Paste Text" << std::endl;
+        bottomBar->setSection(0, "TextBox: Paste");
     });
-    ctxSelectAllText->setCallback([&gui]() {
+    ctxSelectAllText->setCallback([&gui, bottomBar]() {
         gui.selectAllInTextBox();
         std::cout << "TextBox context menu: Select All" << std::endl;
+        bottomBar->setSection(0, "TextBox: Select All");
     });
 
     // ============================================================================
@@ -486,6 +553,8 @@ int main() {
     dataTab->add(dataList);
     dataTab->add(multiLabel);
     dataTab->add(dataMultiText);
+    dataTab->add(progressLabel);
+    dataTab->add(notesProgress);
     dataTab->add(saveBtn);
     dataTab->add(autoSave);
 
