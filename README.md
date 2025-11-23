@@ -12,9 +12,9 @@ A lightweight, modern C++ GUI framework for Linux built on top of MiniFB with co
 
 This framework provides a complete set of widgets for building desktop applications:
 
-- **Input Widgets**: TextBox, MultiLineTextBox, CheckBox, RadioButton, ScrollBar, ComboBox
-- **Display Widgets**: TextLabel, ImageWidget, ListBox
-- **Containers**: Panel (for organizing and grouping widgets), TabbedPanel
+- **Input Widgets**: TextBox, MultiLineTextBox, CheckBox, RadioButton, ScrollBar, ComboBox, Spinner
+- **Display Widgets**: TextLabel, ImageWidget, ListBox, StatusBar, 
+- **Containers**: Panel (for organizing and grouping widgets), TabbedPanel, Splitter
 - **Interactive Elements**: PushButton, MenuBar, DropDownMenu, ContextMenu, CascadeMenu
 - **Dialogs**: DialogueBox, FileDialog with centralized DialogManager
 - **Advanced Features**: Font rendering with FreeType, image loading support
