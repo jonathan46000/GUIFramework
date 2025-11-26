@@ -57,6 +57,7 @@ int main() {
     MenuItem* testItem = new MenuItem("Test Item");
     PushButton* standaloneButton = new PushButton("Exit Application", 860, 530, 140, 40);
     ListBox* listBox = new ListBox(450, 320, 300, 150);
+    TreeView* treeView = new TreeView(1030, 50, 320, 420);
 
     // TextBox panel widgets
     CascadeMenu* textBoxContextMenu = new CascadeMenu(150, 25);
@@ -177,6 +178,31 @@ int main() {
     for (int i = 1; i <= 20; i++) {
         dataList->addItem("Data Item " + std::to_string(i));
     }
+
+    // TreeView setup
+    TreeNode* filesNode = treeView->addRootChild("Project Files");
+    TreeNode* srcNode = filesNode->addChild("src");
+    srcNode->addChild("main.cpp");
+    srcNode->addChild("Widget.cpp");
+    srcNode->addChild("Panel.cpp");
+    TreeNode* includeNode = filesNode->addChild("include");
+    includeNode->addChild("Widget.h");
+    includeNode->addChild("Panel.h");
+
+    TreeNode* docsNode = treeView->addRootChild("Documentation");
+    docsNode->addChild("README.md");
+    TreeNode* apiNode = docsNode->addChild("API");
+    apiNode->addChild("widgets.md");
+    apiNode->addChild("events.md");
+
+    TreeNode* assetsNode = treeView->addRootChild("Assets");
+    assetsNode->addChild("images");
+    assetsNode->addChild("fonts");
+    assetsNode->addChild("config.json");
+
+    treeView->setSelectionCallback([bottomBar](TreeNode* node) {
+        bottomBar->setSection(0, "Selected: " + node->text);
+    });
 
     // ProgressBar setup - track notes textbox capacity (max 1000 chars)
     notesProgress->setMaxValue(1000.0);
@@ -597,6 +623,7 @@ int main() {
     gui.add(standaloneMenu);
     gui.add(standaloneButton);
     gui.add(listBox);
+    gui.add(treeView);
     gui.add(tabbedPanel);
 
     gui.addContextMenu(contextMenu);

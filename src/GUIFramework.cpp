@@ -4,6 +4,7 @@
 #include "CascadeMenu.h"
 #include "TabbedPanel.h"
 #include "Splitter.h"
+#include "TreeView.h"
 #include <X11/Xlib.h>
 #include <fontconfig/fontconfig.h>
 #include <iostream>
@@ -22,6 +23,7 @@ GUIFramework::GUIFramework(const char* title, int width, int height)
       draggedScrollBar(nullptr),
       draggedListBox(nullptr),
       draggedSplitter(nullptr),
+      draggedTreeView(nullptr),
       loadedFontSize(12) {
 
     XInitThreads();
@@ -228,6 +230,12 @@ void GUIFramework::handleWidgetMouseButton(Widget* widget, int mouseX, int mouse
             draggedListBox = listBox;
             return;
         }
+        TreeView* treeView = dynamic_cast<TreeView*>(widget);
+        if (treeView && treeView->checkClick(mouseX, mouseY)) {
+            treeView->handleMouseButton(mouseX, mouseY, true);
+            draggedTreeView = treeView;
+            return;
+        }
         ScrollBar* scrollBar = dynamic_cast<ScrollBar*>(widget);
         if (scrollBar && scrollBar->checkClick(mouseX, mouseY)) {
             scrollBar->handleMouseButton(mouseX, mouseY, true);
@@ -428,6 +436,13 @@ void GUIFramework::handleMouseButton(mfb_mouse_button button, mfb_key_mod /*mod*
                         widgetClicked = true;
                         break;
                     }
+                    TreeView* treeView = dynamic_cast<TreeView*>(widget);
+                    if (treeView && treeView->checkClick(mouseX, mouseY)) {
+                        treeView->handleMouseButton(mouseX, mouseY, true);
+                        draggedTreeView = treeView;
+                        widgetClicked = true;
+                        break;
+                    }
                     DropDownMenu* dropdown = dynamic_cast<DropDownMenu*>(widget);
                     if (dropdown) {
                         if (dropdown->checkClick(mouseX, mouseY)) {
@@ -488,6 +503,10 @@ void GUIFramework::handleMouseButton(mfb_mouse_button button, mfb_key_mod /*mod*
             if (draggedListBox) {
                 draggedListBox->handleMouseButton(mouseX, mouseY, false);
                 draggedListBox = nullptr;
+            }
+            if (draggedTreeView) {
+                draggedTreeView->handleMouseButton(mouseX, mouseY, false);
+                draggedTreeView = nullptr;
             }
             if (draggedSplitter) {
                 draggedSplitter->handleMouseButton(mouseX, mouseY, false);
@@ -565,6 +584,7 @@ void GUIFramework::handleMouseMove(int x, int y) {
     if (pressedButton) pressedButton->setPressed(pressedButton->checkClick(mouseX, mouseY));
     if (draggedScrollBar) draggedScrollBar->handleMouseMove(mouseX, mouseY);
     if (draggedListBox) draggedListBox->handleMouseMove(mouseX, mouseY);
+    if (draggedTreeView) draggedTreeView->handleMouseMove(mouseX, mouseY);
     if (selectingTextBox) selectingTextBox->handleMouseMove(mouseX, mouseY);
     if (selectingMultiLineTextBox) selectingMultiLineTextBox->handleMouseMove(mouseX, mouseY);
 }
