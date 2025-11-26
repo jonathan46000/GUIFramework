@@ -15,7 +15,7 @@ This framework provides a complete set of widgets for building desktop applicati
 - **Input Widgets**: TextBox, MultiLineTextBox, CheckBox, RadioButton, ScrollBar, ComboBox, Spinner
 - **Display Widgets**: TextLabel, ImageWidget, ListBox, StatusBar
 - **Containers**: Panel (for organizing and grouping widgets), TabbedPanel, Splitter
-- **Interactive Elements**: PushButton, MenuBar, DropDownMenu, ContextMenu, CascadeMenu, TreeView
+- **Interactive Elements**: PushButton, MenuBar, DropDownMenu, ContextMenu, CascadeMenu, TreeView, TableGrid
 - **Dialogs**: DialogueBox, FileDialog with centralized DialogManager
 - **Advanced Features**: Font rendering with FreeType, image loading support
 

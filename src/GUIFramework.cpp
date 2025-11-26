@@ -5,6 +5,7 @@
 #include "TabbedPanel.h"
 #include "Splitter.h"
 #include "TreeView.h"
+#include "TableGrid.h"
 #include <X11/Xlib.h>
 #include <fontconfig/fontconfig.h>
 #include <iostream>
@@ -24,6 +25,7 @@ GUIFramework::GUIFramework(const char* title, int width, int height)
       draggedListBox(nullptr),
       draggedSplitter(nullptr),
       draggedTreeView(nullptr),
+      draggedTableGrid(nullptr),
       loadedFontSize(12) {
 
     XInitThreads();
@@ -236,6 +238,22 @@ void GUIFramework::handleWidgetMouseButton(Widget* widget, int mouseX, int mouse
             draggedTreeView = treeView;
             return;
         }
+        TableGrid* tableGrid = dynamic_cast<TableGrid*>(widget);
+        if (tableGrid && tableGrid->checkClick(mouseX, mouseY)) {
+            if (focusedWidget && focusedWidget != tableGrid) {
+                TextBox* oldTextBox = dynamic_cast<TextBox*>(focusedWidget);
+                if (oldTextBox) oldTextBox->setFocus(false);
+                MultiLineTextBox* oldMultiLine = dynamic_cast<MultiLineTextBox*>(focusedWidget);
+                if (oldMultiLine) oldMultiLine->setFocus(false);
+                ComboBox* oldComboBox = dynamic_cast<ComboBox*>(focusedWidget);
+                if (oldComboBox) oldComboBox->setFocus(false);
+            }
+            tableGrid->handleMouseButton(mouseX, mouseY, true);
+            focusedWidget = tableGrid;
+            lastFocusedWidget = tableGrid;
+            draggedTableGrid = tableGrid;
+            return;
+        }
         ScrollBar* scrollBar = dynamic_cast<ScrollBar*>(widget);
         if (scrollBar && scrollBar->checkClick(mouseX, mouseY)) {
             scrollBar->handleMouseButton(mouseX, mouseY, true);
@@ -443,6 +461,23 @@ void GUIFramework::handleMouseButton(mfb_mouse_button button, mfb_key_mod /*mod*
                         widgetClicked = true;
                         break;
                     }
+                    TableGrid* tableGrid = dynamic_cast<TableGrid*>(widget);
+                    if (tableGrid && tableGrid->checkClick(mouseX, mouseY)) {
+                        if (focusedWidget && focusedWidget != tableGrid) {
+                            TextBox* oldTextBox = dynamic_cast<TextBox*>(focusedWidget);
+                            if (oldTextBox) oldTextBox->setFocus(false);
+                            MultiLineTextBox* oldMultiLine = dynamic_cast<MultiLineTextBox*>(focusedWidget);
+                            if (oldMultiLine) oldMultiLine->setFocus(false);
+                            ComboBox* oldComboBox = dynamic_cast<ComboBox*>(focusedWidget);
+                            if (oldComboBox) oldComboBox->setFocus(false);
+                        }
+                        tableGrid->handleMouseButton(mouseX, mouseY, true);
+                        focusedWidget = tableGrid;
+                        lastFocusedWidget = tableGrid;
+                        draggedTableGrid = tableGrid;
+                        widgetClicked = true;
+                        break;
+                    }
                     DropDownMenu* dropdown = dynamic_cast<DropDownMenu*>(widget);
                     if (dropdown) {
                         if (dropdown->checkClick(mouseX, mouseY)) {
@@ -507,6 +542,10 @@ void GUIFramework::handleMouseButton(mfb_mouse_button button, mfb_key_mod /*mod*
             if (draggedTreeView) {
                 draggedTreeView->handleMouseButton(mouseX, mouseY, false);
                 draggedTreeView = nullptr;
+            }
+            if (draggedTableGrid) {
+                draggedTableGrid->handleMouseButton(mouseX, mouseY, false);
+                draggedTableGrid = nullptr;
             }
             if (draggedSplitter) {
                 draggedSplitter->handleMouseButton(mouseX, mouseY, false);
@@ -585,6 +624,7 @@ void GUIFramework::handleMouseMove(int x, int y) {
     if (draggedScrollBar) draggedScrollBar->handleMouseMove(mouseX, mouseY);
     if (draggedListBox) draggedListBox->handleMouseMove(mouseX, mouseY);
     if (draggedTreeView) draggedTreeView->handleMouseMove(mouseX, mouseY);
+    if (draggedTableGrid) draggedTableGrid->handleMouseMove(mouseX, mouseY);
     if (selectingTextBox) selectingTextBox->handleMouseMove(mouseX, mouseY);
     if (selectingMultiLineTextBox) selectingMultiLineTextBox->handleMouseMove(mouseX, mouseY);
 }

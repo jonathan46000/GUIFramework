@@ -139,6 +139,11 @@ int main() {
     PushButton* saveBtn = new PushButton("Save", 20, 310, 100, 30);
     CheckBox* autoSave = new CheckBox("Auto-save", 150, 310);
 
+    // Grid tab widgets
+    Panel* gridTab = new Panel(0, 0, 0, 0);
+    TextLabel* gridLabel = new TextLabel("Tab 4: Table/Grid", 10, 10, 400, 25);
+    TableGrid* tableGrid = new TableGrid(10, 50, 1260, 290, 20, 10);
+
     // ============================================================================
     // SECTION 2: WIDGET SETUP & CONFIGURATION
     // ============================================================================
@@ -227,6 +232,33 @@ int main() {
     infoTab->setDrawBorder(false);
     settingsTab->setDrawBorder(false);
     dataTab->setDrawBorder(false);
+    gridTab->setDrawBorder(false);
+
+    // TableGrid setup
+    tableGrid->setCellValue(0, 0, "Name");
+    tableGrid->setCellValue(0, 1, "Age");
+    tableGrid->setCellValue(0, 2, "City");
+    tableGrid->setCellValue(0, 3, "Score");
+    tableGrid->setCellValue(0, 4, "Email");
+    tableGrid->setCellValue(1, 0, "Alice");
+    tableGrid->setCellValue(1, 1, "25");
+    tableGrid->setCellValue(1, 2, "New York");
+    tableGrid->setCellValue(1, 3, "95.5");
+    tableGrid->setCellValue(1, 4, "alice@example.com");
+    tableGrid->setCellValue(2, 0, "Bob");
+    tableGrid->setCellValue(2, 1, "30");
+    tableGrid->setCellValue(2, 2, "Boston");
+    tableGrid->setCellValue(2, 3, "87.2");
+    tableGrid->setCellValue(2, 4, "bob@example.com");
+    tableGrid->setCellValue(3, 0, "Carol");
+    tableGrid->setCellValue(3, 1, "28");
+    tableGrid->setCellValue(3, 2, "Chicago");
+    tableGrid->setCellValue(3, 3, "92.8");
+    tableGrid->setCellValue(3, 4, "carol@example.com");
+
+    tableGrid->setCellChangeCallback([bottomBar](int row, int col, const std::string& value) {
+        bottomBar->setSection(0, "Cell [" + std::to_string(row) + "," + std::to_string(col) + "] = " + value);
+    });
 
     // ============================================================================
     // SECTION 3: CALLBACK SETUP
@@ -603,10 +635,15 @@ int main() {
     dataTab->add(saveBtn);
     dataTab->add(autoSave);
 
+    // Build Grid tab
+    gridTab->add(gridLabel);
+    gridTab->add(tableGrid);
+
     // Build TabbedPanel
     tabbedPanel->addTab("Info", infoTab);
     tabbedPanel->addTab("Settings", settingsTab);
     tabbedPanel->addTab("Data", dataTab);
+    tabbedPanel->addTab("Grid", gridTab);
 
     // ============================================================================
     // SECTION 5: GUI ASSEMBLY

@@ -19,7 +19,7 @@ SRCS = $(SRC_DIR)/main.cpp $(SRC_DIR)/GUIFramework.cpp $(SRC_DIR)/Widget.cpp \
        $(SRC_DIR)/ImageLoader.cpp $(SRC_DIR)/ImageWidget.cpp $(SRC_DIR)/MultiLineTextBox.cpp \
        $(SRC_DIR)/TabbedPanel.cpp $(SRC_DIR)/ComboBox.cpp $(SRC_DIR)/StatusBar.cpp \
        $(SRC_DIR)/ProgressBar.cpp $(SRC_DIR)/Spinner.cpp $(SRC_DIR)/Splitter.cpp \
-       $(SRC_DIR)/TreeView.cpp
+       $(SRC_DIR)/TreeView.cpp $(SRC_DIR)/TableGrid.cpp
 
 # Object files
 OBJS = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SRCS))
