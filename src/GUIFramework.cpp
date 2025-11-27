@@ -6,6 +6,7 @@
 #include "Splitter.h"
 #include "TreeView.h"
 #include "TableGrid.h"
+#include "Canvas.h"
 #include <X11/Xlib.h>
 #include <fontconfig/fontconfig.h>
 #include <iostream>
@@ -26,6 +27,7 @@ GUIFramework::GUIFramework(const char* title, int width, int height)
       draggedSplitter(nullptr),
       draggedTreeView(nullptr),
       draggedTableGrid(nullptr),
+      draggedCanvas(nullptr),
       loadedFontSize(12) {
 
     XInitThreads();
@@ -254,6 +256,12 @@ void GUIFramework::handleWidgetMouseButton(Widget* widget, int mouseX, int mouse
             draggedTableGrid = tableGrid;
             return;
         }
+        Canvas* canvas = dynamic_cast<Canvas*>(widget);
+        if (canvas && canvas->checkClick(mouseX, mouseY)) {
+            canvas->handleMouseButton(mouseX, mouseY, true);
+            draggedCanvas = canvas;
+            return;
+        }
         ScrollBar* scrollBar = dynamic_cast<ScrollBar*>(widget);
         if (scrollBar && scrollBar->checkClick(mouseX, mouseY)) {
             scrollBar->handleMouseButton(mouseX, mouseY, true);
@@ -478,6 +486,13 @@ void GUIFramework::handleMouseButton(mfb_mouse_button button, mfb_key_mod /*mod*
                         widgetClicked = true;
                         break;
                     }
+                    Canvas* canvas = dynamic_cast<Canvas*>(widget);
+                    if (canvas && canvas->checkClick(mouseX, mouseY)) {
+                        canvas->handleMouseButton(mouseX, mouseY, true);
+                        draggedCanvas = canvas;
+                        widgetClicked = true;
+                        break;
+                    }
                     DropDownMenu* dropdown = dynamic_cast<DropDownMenu*>(widget);
                     if (dropdown) {
                         if (dropdown->checkClick(mouseX, mouseY)) {
@@ -546,6 +561,10 @@ void GUIFramework::handleMouseButton(mfb_mouse_button button, mfb_key_mod /*mod*
             if (draggedTableGrid) {
                 draggedTableGrid->handleMouseButton(mouseX, mouseY, false);
                 draggedTableGrid = nullptr;
+            }
+            if (draggedCanvas) {
+                draggedCanvas->handleMouseButton(mouseX, mouseY, false);
+                draggedCanvas = nullptr;
             }
             if (draggedSplitter) {
                 draggedSplitter->handleMouseButton(mouseX, mouseY, false);
@@ -625,6 +644,7 @@ void GUIFramework::handleMouseMove(int x, int y) {
     if (draggedListBox) draggedListBox->handleMouseMove(mouseX, mouseY);
     if (draggedTreeView) draggedTreeView->handleMouseMove(mouseX, mouseY);
     if (draggedTableGrid) draggedTableGrid->handleMouseMove(mouseX, mouseY);
+    if (draggedCanvas) draggedCanvas->handleMouseMove(mouseX, mouseY);
     if (selectingTextBox) selectingTextBox->handleMouseMove(mouseX, mouseY);
     if (selectingMultiLineTextBox) selectingMultiLineTextBox->handleMouseMove(mouseX, mouseY);
 }

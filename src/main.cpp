@@ -144,6 +144,11 @@ int main() {
     TextLabel* gridLabel = new TextLabel("Tab 4: Table/Grid", 10, 10, 400, 25);
     TableGrid* tableGrid = new TableGrid(10, 50, 1260, 290, 20, 10);
 
+    // Canvas tab widgets
+    Panel* canvasTab = new Panel(0, 0, 0, 0);
+    TextLabel* canvasLabel = new TextLabel("Tab 5: Canvas Drawing", 10, 10, 400, 25);
+    Canvas* canvas = new Canvas(10, 50, 800, 290);
+
     // ============================================================================
     // SECTION 2: WIDGET SETUP & CONFIGURATION
     // ============================================================================
@@ -259,6 +264,26 @@ int main() {
     tableGrid->setCellChangeCallback([bottomBar](int row, int col, const std::string& value) {
         bottomBar->setSection(0, "Cell [" + std::to_string(row) + "," + std::to_string(col) + "] = " + value);
     });
+
+    // Canvas setup - draw some primitives and enable mouse drawing
+    canvas->setDrawCallback([](Canvas* c, uint32_t*, int, int) {
+        // Draw test graphics primitives (these are drawn once at initialization)
+        c->drawLine(50, 50, 200, 150, 0xFFFF0000);  // Red line
+        c->drawRect(250, 50, 100, 80, 0xFF00FF00);  // Green rectangle
+        c->fillRect(400, 50, 100, 80, 0xFF0000FF);  // Blue filled rectangle
+        c->drawCircle(150, 300, 60, 0xFFFF00FF);    // Magenta circle
+        c->fillCircle(350, 300, 60, 0xFF00FFFF);    // Cyan filled circle
+    });
+
+    canvas->setMouseCallback([canvas, bottomBar](int x, int y, bool isPressed) {
+        // Only draw when mouse button is pressed
+        if (isPressed) {
+            canvas->setPixel(x, y, 0xFF000000);
+            bottomBar->setSection(0, "Drawing at (" + std::to_string(x) + ", " + std::to_string(y) + ")");
+        }
+    });
+
+    canvasTab->setDrawBorder(false);
 
     // ============================================================================
     // SECTION 3: CALLBACK SETUP
@@ -639,11 +664,16 @@ int main() {
     gridTab->add(gridLabel);
     gridTab->add(tableGrid);
 
+    // Build Canvas tab
+    canvasTab->add(canvasLabel);
+    canvasTab->add(canvas);
+
     // Build TabbedPanel
     tabbedPanel->addTab("Info", infoTab);
     tabbedPanel->addTab("Settings", settingsTab);
     tabbedPanel->addTab("Data", dataTab);
     tabbedPanel->addTab("Grid", gridTab);
+    tabbedPanel->addTab("Canvas", canvasTab);
 
     // ============================================================================
     // SECTION 5: GUI ASSEMBLY

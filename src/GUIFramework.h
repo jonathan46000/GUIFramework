@@ -29,6 +29,7 @@
 #include "Splitter.h"
 #include "TreeView.h"
 #include "TableGrid.h"
+#include "Canvas.h"
 #include <vector>
 #include <string>
 #include <set>
@@ -50,6 +51,7 @@ private:
     Splitter* draggedSplitter;
     TreeView* draggedTreeView;
     TableGrid* draggedTableGrid;
+    Canvas* draggedCanvas;
     std::vector<Widget*> widgets;
     std::vector<MenuBar*> menuBars;
     std::vector<StatusBar*> statusBars;
